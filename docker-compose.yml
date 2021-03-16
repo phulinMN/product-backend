@@ -1,0 +1,50 @@
+version: "3.3"
+
+services:
+  app:
+    image: node:12.20.0-alpine
+    container_name: product-api
+    restart: always
+    build: .
+      # context: .
+      # dockerfile: Dockerfile.prod
+    working_dir: /app
+    environment:
+      TZ: "Asia/Bangkok"
+      NODE_ENV: production
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    # env_file:
+    #   - .env
+    command: yarn start
+    depends_on:
+      - db
+    networks:
+      - test
+
+  db:
+    image: mysql
+    networks:
+      - test
+    # command: --default-authentication-plugin=mysql_native_password
+    # cap_add:
+    #   - SYS_NICE  # CAP_SYS_NICE
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+    # environment:
+    #   TZ: "Asia/Bangkok"
+    #   MYSQL_ROOT_PASSWORD: root
+    #   MYSQL_DATABASE: product_test_db
+    #   MYSQL_USER: user
+    #   MYSQL_PASSWORD: user
+    ports:
+      - "3307:3306"
+
+volumes:
+  db-data:
+networks:
+  test:
