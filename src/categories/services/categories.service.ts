@@ -11,7 +11,8 @@ export class CategoriesService {
   ) {}
 
   async createCategory(category: Category) {
-    this.categoriesRepository.create(category);
+    const newCategory = this.categoriesRepository.create(category);
+    return await this.categoriesRepository.save(newCategory);
   }
   async getCategories(): Promise<Category[]> {
     return await this.categoriesRepository.find();
@@ -23,11 +24,18 @@ export class CategoriesService {
     });
   }
 
-  async updateCategory(user: Category) {
-    this.categoriesRepository.save(user);
+  async updateCategory(category: Category) {
+    return await this.categoriesRepository.update(
+      { id: category.id },
+      {
+        name: category.name,
+        image: category.image,
+        description: category.description,
+      },
+    );
   }
 
-  async removeCategory(user: Category) {
-    this.categoriesRepository.delete(user);
+  async removeCategory(id: number) {
+    this.categoriesRepository.delete(id);
   }
 }
