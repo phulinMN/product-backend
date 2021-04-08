@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { RegisterUserDto } from '../user.dto';
+import { IAccessToken, RegisterUserDto, UserLoginDto } from '../user.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -18,5 +18,11 @@ export class UserService {
     }
     user = this.userRepository.create(data);
     return await this.userRepository.save(user);
+  }
+
+  async login({ email, password }: UserLoginDto): Promise<IAccessToken> {
+    const user = await this.userRepository.findOne({ email });
+    // TODO: jwt
+    return { accessToken: '123123' };
   }
 }

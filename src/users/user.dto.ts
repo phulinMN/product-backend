@@ -16,3 +16,15 @@ export class RegisterUserDto {
   @ApiProperty()
   password!: string;
 }
+
+export class UserLoginDto {
+  @ApiProperty()
+  email!: string;
+
+  @ApiProperty()
+  password!: string;
+}
+
+export class IAccessToken {
+  accessToken: string;
+}
