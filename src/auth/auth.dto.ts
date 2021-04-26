@@ -28,3 +28,15 @@ export class RegisterUserDto {
   @Length(6)
   password: string;
 }
+
+export class UserLoginDto {
+  @ApiProperty()
+  email!: string;
+
+  @ApiProperty()
+  password!: string;
+}
+
+export class IAccessToken {
+  accessToken: string;
+}

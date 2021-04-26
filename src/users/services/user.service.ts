@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -24,5 +24,15 @@ export class UserService {
     const user = await this.userRepository.findOne({ email });
     // TODO: jwt
     return { accessToken: '123123' };
+  }
+
+  async verify(findCondition: Partial<User>): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { ...findCondition },
+    })
+    if (!user) {
+      throw new NotFoundException('not found user')
+    }
+    return user
   }
 }
