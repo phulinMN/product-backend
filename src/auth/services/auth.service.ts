@@ -9,7 +9,7 @@ import {
   IAccessToken,
   RegisterUserDto,
   UserLoginDto,
-} from 'src/users/user.dto';
+} from '../auth.dto';
 import { compareSync, hashSync } from 'bcrypt';
 import { UserService } from 'src/users/services/user.service';
 import { JwtService } from '@nestjs/jwt';
