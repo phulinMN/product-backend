@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from 'src/categories/entities/category.entity';
 import { OrderStatusEnum } from 'src/common/interfaces/order.interface';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -7,8 +6,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { OrderItem } from './order-item.entity';
 
 @Entity({ name: 'orders' })
 export class Order {
@@ -31,16 +33,13 @@ export class Order {
   @Column({ name: 'discount_price' })
   discountPrice: number;
 
-
   @ApiProperty()
   @Column({ name: 'address_street' })
   addressStreet: number;
 
-
   @ApiProperty()
   @Column({ name: 'address_province' })
   addressProvince: number;
-
 
   @ApiProperty()
   @Column({ name: 'address_district' })
@@ -75,4 +74,7 @@ export class Order {
   @ManyToOne(() => User, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user?: User;
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  orderItems?: OrderItem[];
 }

@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/categories/entities/category.entity';
+import { OrderItem } from 'src/orders/entities/order-item.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -42,4 +44,8 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'category_id' })
   category?: Category;
+
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  orderItems?: OrderItem[];
 }
