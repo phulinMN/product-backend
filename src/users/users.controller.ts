@@ -33,7 +33,8 @@ export class UserController {
       id: userInfo.id,
       email: userInfo.email,
       username: userInfo.username,
-      ...data,
+      firstname: data.firstname,
+      lastname: data.lastname,
     });
   }
 }

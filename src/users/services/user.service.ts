@@ -23,6 +23,9 @@ export class UserService {
 
   async editMyProfile(data: IUpdateUserInfo): Promise<IMessage> {
     const { id, firstname, lastname, email, username } = data;
+    if (!lastname) {
+      throw new NotFoundException('lastname not exits')
+    }
     await this.userRepository.save({
       id,
       firstname,
