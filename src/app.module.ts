@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { OrderModule } from './orders/order.module';
 import { ProductModule } from './products/product.module';
 import { UsersModule } from './users/users.module';
 
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     CategoriesModule,
     UsersModule,
+    OrderModule,
     ProductModule,
   ],
   controllers: [AppController],
