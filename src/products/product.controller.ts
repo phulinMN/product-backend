@@ -12,7 +12,7 @@ import { Product } from './entities/product.entity';
 import { ProductService } from './services/product.service';
 
 @ApiTags('Product')
-@Controller('products')
+@Controller('Products')
 export class ProductController {
   constructor(private productService: ProductService) {}
 

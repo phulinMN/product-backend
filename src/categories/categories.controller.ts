@@ -11,7 +11,7 @@ import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Category } from './entities/category.entity';
 import { CategoriesService } from './services/categories.service';
 @ApiTags('Categories')
-@Controller('categories')
+@Controller('Categories')
 export class CategoriesController {
   constructor(private categoryService: CategoriesService) {}
 

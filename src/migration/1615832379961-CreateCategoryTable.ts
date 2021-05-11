@@ -6,7 +6,13 @@ export class CreateCategoryTable1615832379961 implements MigrationInterface {
       new Table({
         name: 'categories',
         columns: [
-          { name: 'id', type: 'int', isPrimary: true },
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           { name: 'name', type: 'varchar' },
           { name: 'image', type: 'varchar' },
           { name: 'description', type: 'varchar' },

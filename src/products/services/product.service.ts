@@ -24,8 +24,8 @@ export class ProductService {
     return await this.productRepo.find();
   }
 
-  async getProductById(productId: number): Promise<Product[]> {
-    return await this.productRepo.find({
+  async getProductById(productId: number): Promise<Product> {
+    return await this.productRepo.findOne({
       id: productId,
     });
   }

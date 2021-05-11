@@ -16,7 +16,7 @@ export class TUser {
 
   updatedAt: Date;
 
-  users: User[];
+  users?: User[];
 
   info(): IUserInfo {
     return {

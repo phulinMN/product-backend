@@ -15,7 +15,7 @@ import { OrderItem } from './order-item.entity';
 @Entity({ name: 'orders' })
 export class Order {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @ApiProperty()
   @Column({ name: 'user_id' })
@@ -35,31 +35,31 @@ export class Order {
 
   @ApiProperty()
   @Column({ name: 'address_street' })
-  addressStreet: number;
+  addressStreet: string;
 
   @ApiProperty()
   @Column({ name: 'address_province' })
-  addressProvince: number;
+  addressProvince: string;
 
   @ApiProperty()
   @Column({ name: 'address_district' })
-  addressDistrict: number;
+  addressDistrict: string;
 
   @ApiProperty()
   @Column({ name: 'address_city' })
-  addressCity: number;
+  addressCity: string;
 
   @ApiProperty()
   @Column({ name: 'address_zipcode' })
-  addressZipcode: number;
+  addressZipcode: string;
 
   @ApiProperty()
   @Column({ name: 'phone' })
-  phone: number;
+  phone: string;
 
   @ApiProperty()
   @Column({ name: 'slip' })
-  slip: number;
+  slip?: string;
 
   @ApiProperty()
   @Column({ name: 'status', default: 'pending' })

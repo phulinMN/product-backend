@@ -6,7 +6,13 @@ export class CreateOrderItems1620664535522 implements MigrationInterface {
       new Table({
         name: 'order_items',
         columns: [
-          { name: 'id', type: 'int', isPrimary: true },
+          {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           {
             name: 'product_id',
             type: 'int',
