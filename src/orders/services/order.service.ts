@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   ICreateOrder,
   ICreateOrderItem,
+  IUpdateOrder,
   OrderStatusEnum,
 } from 'src/common/interfaces/order.interface';
 import { ProductService } from 'src/products/services/product.service';
@@ -28,6 +29,22 @@ export class OrderService {
       productId,
     });
     return await this.orderItemRepo.save(newOrderItem);
+  }
+
+  async updateOrderItem(orderId: number, data: ICreateOrderItem) {
+    const { quantity, productId } = data;
+    const orderItem = await this.orderItemRepo.findOne({ orderId, productId });
+    console.log('updateOrderItem', orderId, productId, orderItem);
+    if (orderItem === undefined) {
+      return await this.createOrderItem(orderId, data);
+    }
+    return await this.orderItemRepo.update(
+      { id: orderItem.id },
+      {
+        quantity,
+        productId,
+      },
+    );
   }
 
   async createOrder(userId: number, data: ICreateOrder) {
@@ -63,7 +80,7 @@ export class OrderService {
         const prod = await this.productService.getProductById(
           product.productId,
         );
-        totalPrice += +prod.price;
+        totalPrice += +prod.price * product.quantity;
         return await this.createOrderItem(order.id, product);
       }),
     );
@@ -75,13 +92,58 @@ export class OrderService {
     return { ...orderWithTotalPrice, products: productOrder };
   }
 
-  async getOrderById(orderId: number): Promise<Order[]> {
-    return await this.orderRepo.find({
+  async getOrderById(orderId: number): Promise<Order> {
+    return await this.orderRepo.findOne({
       id: orderId,
     });
   }
 
-  async createOrUpdateOrderItem() {
-    //
+  async updateOrder(orderId: number, userId: number, data: IUpdateOrder) {
+    const {
+      addressCity,
+      addressDistrict,
+      addressProvince,
+      addressStreet,
+      addressZipcode,
+      phone,
+      products,
+      status,
+    } = data;
+    const order = await this.getOrderById(orderId);
+    let totalPrice = 0;
+    let productOrder = [];
+    if (products) {
+      productOrder = await Promise.all(
+        products.map(async (product) => {
+          const prod = await this.productService.getProductById(
+            product.productId,
+          );
+          totalPrice += +prod.price * product.quantity;
+          return await this.updateOrderItem(orderId, product);
+        }),
+      );
+    }
+    console.log('update order', totalPrice);
+    return await this.orderRepo.save({
+      id: orderId,
+      ...order,
+      ...data,
+      totalPrice,
+    });
+  }
+
+  async paidOrder(orderId: number, slip: string): Promise<Order> {
+    const order = await this.getOrderById(orderId);
+    // TODO: Add slip path
+    return await this.orderRepo.save({ order, slip });
+  }
+
+  async removeOrder(orderId: number) {
+    const order = await this.getOrderById(orderId);
+    // TODO: Add slip path
+    return await this.orderRepo.save({
+      ...order,
+      status: OrderStatusEnum.CANCEL,
+    });
   }
 }

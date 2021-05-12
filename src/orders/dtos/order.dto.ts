@@ -76,3 +76,57 @@ export class CreateOrderDto {
   @IsEnum(OrderStatusEnum)
   status?: OrderStatusEnum;
 }
+
+export class UpdateOrderDto {
+  @ApiProperty({
+    example: [
+      {
+        productId: 1,
+        quantity: 1,
+      },
+      {
+        productId: 2,
+        quantity: 2,
+      },
+    ],
+  })
+  @ValidateIf(({ products }) => products !== undefined)
+  @IsArray()
+  @Type(() => CreateOrderItemDto)
+  products?: ICreateOrderItem[];
+
+  @ApiProperty()
+  @ValidateIf(({ addressStreet }) => addressStreet !== undefined)
+  @IsString()
+  addressStreet?: string;
+
+  @ApiProperty()
+  @ValidateIf(({ addressProvince }) => addressProvince !== undefined)
+  @IsString()
+  addressProvince?: string;
+
+  @ApiProperty()
+  @ValidateIf(({ addressDistrict }) => addressDistrict !== undefined)
+  @IsString()
+  addressDistrict?: string;
+
+  @ApiProperty()
+  @ValidateIf(({ addressCity }) => addressCity !== undefined)
+  @IsString()
+  addressCity?: string;
+
+  @ApiProperty()
+  @ValidateIf(({ addressZipcode }) => addressZipcode !== undefined)
+  @IsString()
+  addressZipcode?: string;
+
+  @ApiProperty()
+  @ValidateIf(({ phone }) => phone !== undefined)
+  @IsString()
+  phone?: string;
+
+  @ApiProperty({ example: 'pending' })
+  @ValidateIf(({ status }) => status !== undefined)
+  @IsEnum(OrderStatusEnum)
+  status?: OrderStatusEnum;
+}

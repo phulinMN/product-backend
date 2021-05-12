@@ -1,10 +1,18 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/local-auth.guard';
 import { UserRequest } from 'src/common/custom-decorator';
 import { ICreateOrder } from 'src/common/interfaces/order.interface';
 import { TUser } from 'src/users/transforms/user.transform';
-import { CreateOrderDto } from './dtos/order.dto';
+import { CreateOrderDto, UpdateOrderDto } from './dtos/order.dto';
 import { Order } from './entities/order.entity';
 import { OrderService } from './services/order.service';
 
@@ -37,5 +45,25 @@ export class OrderController {
   createOrder(@UserRequest() user: TUser, @Body() payload: CreateOrderDto) {
     console.log(user.id, payload);
     return this.orderService.createOrder(user.id, payload);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  updateOrder(
+    @Param('id') id: number,
+    @UserRequest() user: TUser,
+    @Body() payload: UpdateOrderDto,
+  ) {
+    console.log(user.id, payload);
+    return this.orderService.updateOrder(id, user.id, payload);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('Cancel/:id')
+  cancelOrderById(@Param('id') id: number, @UserRequest() user: TUser) {
+    console.log(user.id);
+    return this.orderService.removeOrder(id);
   }
 }
