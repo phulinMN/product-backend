@@ -35,5 +35,5 @@ export interface IUpdateOrder {
 
 export interface IPaidOrder {
   paidPrice: number;
-  slip: string;
+  file: Express.Multer.File;
 }

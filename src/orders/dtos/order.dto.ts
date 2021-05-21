@@ -130,3 +130,14 @@ export class UpdateOrderDto {
   @IsEnum(OrderStatusEnum)
   status?: OrderStatusEnum;
 }
+
+export class PaidOrderDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  paidPrice: number;
+
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // file: File;
+}

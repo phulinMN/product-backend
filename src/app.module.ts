@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { diskStorage } from 'multer';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -23,6 +25,18 @@ import { UsersModule } from './users/users.module';
         migrationsDir: 'dist/migration',
       },
       synchronize: false,
+    }),
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          return cb(null, `${randomName}${file.originalname}`);
+        },
+      }),
     }),
     AuthModule,
     CategoriesModule,

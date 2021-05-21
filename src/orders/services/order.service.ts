@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { throwError } from 'rxjs';
 import {
   ICreateOrder,
   ICreateOrderItem,
+  IPaidOrder,
   IUpdateOrder,
   OrderStatusEnum,
 } from 'src/common/interfaces/order.interface';
@@ -98,18 +100,23 @@ export class OrderService {
     });
   }
 
+  async getOrderUserById(orderId: number, userId: number): Promise<Order> {
+    const order = await this.orderRepo.findOne({
+      id: orderId,
+    });
+    // console.log("getOrderUserById", order,userId);
+    if (order.userId !== userId) {
+      throw new BadRequestException("It's not your order")
+    }
+    return order;
+  }
+
   async updateOrder(orderId: number, userId: number, data: IUpdateOrder) {
-    const {
-      addressCity,
-      addressDistrict,
-      addressProvince,
-      addressStreet,
-      addressZipcode,
-      phone,
-      products,
-      status,
-    } = data;
+    const { products } = data;
     const order = await this.getOrderById(orderId);
+    if (order.userId !== userId) {
+      throw new BadRequestException("It's not your order")
+    }
     let totalPrice = 0;
     let productOrder = [];
     if (products) {
@@ -124,23 +131,25 @@ export class OrderService {
       );
     }
     console.log('update order', totalPrice);
-    return await this.orderRepo.save({
+    const updatedOrder = await this.orderRepo.save({
       id: orderId,
       ...order,
       ...data,
       totalPrice,
     });
+    return { ...updatedOrder, products: productOrder };
   }
 
-  async paidOrder(orderId: number, slip: string): Promise<Order> {
+  async paidOrder(orderId: number, data: IPaidOrder) {
     const order = await this.getOrderById(orderId);
-    // TODO: Add slip path
-    return await this.orderRepo.save({ order, slip });
+    const { paidPrice, file } = data;
+    return await this.orderRepo.save({ ...order, paidPrice, slip: file.path });
   }
 
   async removeOrder(orderId: number) {
     const order = await this.getOrderById(orderId);
     // TODO: Add slip path
+    // or deleted_at ??
     return await this.orderRepo.save({
       ...order,
       status: OrderStatusEnum.CANCEL,
