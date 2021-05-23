@@ -33,7 +33,10 @@ export interface IUpdateOrder {
   phone?: string;
 }
 
-export interface IPaidOrder {
-  paidPrice: number;
+export interface IUploadSlipOrder {
   file: Express.Multer.File;
+}
+
+export interface IConfirmPaidPrice {
+  paidPrice: number;
 }

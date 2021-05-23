@@ -32,8 +32,8 @@ export class OrderItem {
   @Column({ name: 'updated_at', default: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ name: 'deleted_at', default: 'CURRENT_TIMESTAMP' })
-  deletedAt: Date;
+  @Column({ name: 'deleted_at' })
+  deletedAt?: Date;
 
   @ManyToOne(() => Order, (order) => order.orderItems)
   @JoinColumn({ name: 'order_id' })

@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { throwError } from 'rxjs';
 import {
   ICreateOrder,
   ICreateOrderItem,
-  IPaidOrder,
+  IUploadSlipOrder,
   IUpdateOrder,
   OrderStatusEnum,
+  IConfirmPaidPrice,
 } from 'src/common/interfaces/order.interface';
 import { ProductService } from 'src/products/services/product.service';
 import { Repository } from 'typeorm';
@@ -36,7 +36,6 @@ export class OrderService {
   async updateOrderItem(orderId: number, data: ICreateOrderItem) {
     const { quantity, productId } = data;
     const orderItem = await this.orderItemRepo.findOne({ orderId, productId });
-    console.log('updateOrderItem', orderId, productId, orderItem);
     if (orderItem === undefined) {
       return await this.createOrderItem(orderId, data);
     }
@@ -73,9 +72,7 @@ export class OrderService {
       addressProvince,
       addressZipcode,
     });
-    console.log('newOrder', newOrder);
     const order = await this.orderRepo.save(newOrder);
-    console.log('order', order);
     let totalPrice = 0;
     const productOrder = await Promise.all(
       products.map(async (product) => {
@@ -90,7 +87,6 @@ export class OrderService {
       ...newOrder,
       totalPrice,
     });
-    console.log('productOrder', productOrder);
     return { ...orderWithTotalPrice, products: productOrder };
   }
 
@@ -106,7 +102,7 @@ export class OrderService {
     });
     // console.log("getOrderUserById", order,userId);
     if (order.userId !== userId) {
-      throw new BadRequestException("It's not your order")
+      throw new BadRequestException("It's not your order");
     }
     return order;
   }
@@ -115,7 +111,7 @@ export class OrderService {
     const { products } = data;
     const order = await this.getOrderById(orderId);
     if (order.userId !== userId) {
-      throw new BadRequestException("It's not your order")
+      throw new BadRequestException("It's not your order");
     }
     let totalPrice = 0;
     let productOrder = [];
@@ -130,7 +126,6 @@ export class OrderService {
         }),
       );
     }
-    console.log('update order', totalPrice);
     const updatedOrder = await this.orderRepo.save({
       id: orderId,
       ...order,
@@ -140,19 +135,38 @@ export class OrderService {
     return { ...updatedOrder, products: productOrder };
   }
 
-  async paidOrder(orderId: number, data: IPaidOrder) {
+  async uploadSlip(orderId: number, userId: number, data: IUploadSlipOrder) {
     const order = await this.getOrderById(orderId);
-    const { paidPrice, file } = data;
-    return await this.orderRepo.save({ ...order, paidPrice, slip: file.path });
+    if (order.userId !== userId) {
+      throw new BadRequestException("It's not your order");
+    }
+    if (order.status === OrderStatusEnum.CANCEL) {
+      throw new BadRequestException("Order is cancelled");
+    }
+    const { file } = data;
+    return await this.orderRepo.save({ ...order, slip: file.path });
   }
 
   async removeOrder(orderId: number) {
     const order = await this.getOrderById(orderId);
-    // TODO: Add slip path
-    // or deleted_at ??
     return await this.orderRepo.save({
       ...order,
       status: OrderStatusEnum.CANCEL,
+    });
+  }
+
+  async confirmPaidPrice(orderId: number, data: IConfirmPaidPrice) {
+    const order = await this.getOrderById(orderId);
+    if (+order.totalPrice === data.paidPrice) {
+      return await this.orderRepo.save({
+        ...order,
+        paidPrice: data.paidPrice,
+        status: OrderStatusEnum.SUCCESS,
+      });
+    }
+    return await this.orderRepo.save({
+      ...order,
+      status: OrderStatusEnum.PENDING,
     });
   }
 }

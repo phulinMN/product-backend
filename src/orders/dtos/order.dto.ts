@@ -136,8 +136,4 @@ export class PaidOrderDto {
   @IsNumber()
   @IsNotEmpty()
   paidPrice: number;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // file: File;
 }

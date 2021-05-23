@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/local-auth.guard';
 import { UserRequest } from 'src/common/custom-decorator';
-import { IPaidOrder } from 'src/common/interfaces/order.interface';
+import { IUploadSlipOrder } from 'src/common/interfaces/order.interface';
 import { TUser } from 'src/users/transforms/user.transform';
 import { CreateOrderDto, PaidOrderDto, UpdateOrderDto } from './dtos/order.dto';
 import { Order } from './entities/order.entity';
@@ -36,7 +36,6 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Post()
   createOrder(@UserRequest() user: TUser, @Body() payload: CreateOrderDto) {
-    console.log(user.id, payload);
     return this.orderService.createOrder(user.id, payload);
   }
 
@@ -61,10 +60,9 @@ export class OrderController {
     @UserRequest() user: TUser,
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
-    @Body() payload: IPaidOrder,
+    @Body() payload: IUploadSlipOrder,
   ) {
-    console.log(id);
-    return this.orderService.paidOrder(id, { ...payload, file });
+    return this.orderService.uploadSlip(id, user.id, { file });
   }
 
   @ApiBearerAuth()
@@ -75,7 +73,6 @@ export class OrderController {
     @UserRequest() user: TUser,
     @Body() payload: UpdateOrderDto,
   ) {
-    console.log(user.id, payload);
     return this.orderService.updateOrder(id, user.id, payload);
   }
 
@@ -83,7 +80,11 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Put('Cancel/:id')
   cancelOrderById(@Param('id') id: number, @UserRequest() user: TUser) {
-    console.log(user.id);
     return this.orderService.removeOrder(id);
+  }
+
+  @Put('Confirm/:id')
+  confirmPayment(@Param('id') id: number, @Body() payload: PaidOrderDto) {
+    return this.orderService.confirmPaidPrice(id, payload);
   }
 }
