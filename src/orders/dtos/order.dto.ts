@@ -137,3 +137,11 @@ export class PaidOrderDto {
   @IsNotEmpty()
   paidPrice: number;
 }
+
+// export class CreateQrCodeDto {
+//   @ApiProperty()
+//   @IsNumber()
+//   @IsNotEmpty()
+//   price: number;
+  
+// }

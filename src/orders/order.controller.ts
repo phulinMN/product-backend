@@ -87,4 +87,9 @@ export class OrderController {
   confirmPayment(@Param('id') id: number, @Body() payload: PaidOrderDto) {
     return this.orderService.confirmPaidPrice(id, payload);
   }
+
+  @Post('Payment/QrCode/:orderId')
+  createQrCode(@Param('orderId') orderId: number) {
+    return this.orderService.createQrCode(orderId);
+  }
 }

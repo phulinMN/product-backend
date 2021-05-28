@@ -7,8 +7,10 @@ import {
   IUpdateOrder,
   OrderStatusEnum,
   IConfirmPaidPrice,
+  ICreateQrCode,
 } from 'src/common/interfaces/order.interface';
 import { ProductService } from 'src/products/services/product.service';
+import GbPayService from 'src/third-party/services/gb-pay.service';
 import { Repository } from 'typeorm';
 import { OrderItem } from '../entities/order-item.entity';
 import { Order } from '../entities/order.entity';
@@ -21,6 +23,7 @@ export class OrderService {
     @InjectRepository(OrderItem)
     private orderItemRepo: Repository<OrderItem>,
     private productService: ProductService,
+    private gbPayService: GbPayService,
   ) {}
 
   async createOrderItem(orderId: number, data: ICreateOrderItem) {
@@ -141,7 +144,7 @@ export class OrderService {
       throw new BadRequestException("It's not your order");
     }
     if (order.status === OrderStatusEnum.CANCEL) {
-      throw new BadRequestException("Order is cancelled");
+      throw new BadRequestException('Order is cancelled');
     }
     const { file } = data;
     return await this.orderRepo.save({ ...order, slip: file.path });
@@ -168,5 +171,16 @@ export class OrderService {
       ...order,
       status: OrderStatusEnum.PENDING,
     });
+  }
+
+  async createQrCode(orderId: number) {
+    const url = 'http://localhost:8081/test';
+    const order = await this.getOrderById(orderId);
+    const imageBase = await this.gbPayService.generateQrCode({
+      backgroundUrl: url,
+      amount: order.totalPrice,
+      referenceNo: `${orderId}`,
+    });
+    return imageBase;
   }
 }

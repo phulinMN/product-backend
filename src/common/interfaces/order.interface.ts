@@ -40,3 +40,9 @@ export interface IUploadSlipOrder {
 export interface IConfirmPaidPrice {
   paidPrice: number;
 }
+
+export interface ICreateQrCode {
+  orderId: number;
+  amount: number;
+  backgroundUrl: string;
+}
